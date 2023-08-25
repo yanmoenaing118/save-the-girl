@@ -1,6 +1,5 @@
-import Sprite from "./Sprite";
-import Texture from "./Texture";
 import TileSprite from "./TileSprite";
+import { textures } from "./constants";
 import math from "./math";
 import { FRAME_SPIDERS } from "./sprite-frames";
 export default class Spider extends TileSprite {
@@ -9,7 +8,7 @@ export default class Spider extends TileSprite {
   bite: boolean = false;
   life = 10;
   constructor() {
-    super(new Texture("./assets/spider.png"));
+    super(textures.spider);
     this.w = 64 - this.padding;
     this.h = 64 - this.padding;
     this.speed = math.rand(300, 600);

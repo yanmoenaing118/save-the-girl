@@ -1,9 +1,9 @@
 import Sprite from "./Sprite";
-import Texture from "./Texture";
+import { textures } from "./constants";
 
 export default class Heart extends Sprite {
   constructor() {
-    super(new Texture("./assets/heart.png"));
+    super(textures.heart);
     this.w = 16;
     this.h = 16;
     this.dead = false;

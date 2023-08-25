@@ -1,10 +1,10 @@
 import Texture from "./Texture";
-import { h, w } from "./constants";
+import { h, textures, w } from "./constants";
 
 export default class Background {
     bg: Texture;
     constructor() {
-        this.bg = new Texture("./assets/bg1.png");
+        this.bg = textures.bg;
     }
 
     render(context: CanvasRenderingContext2D){

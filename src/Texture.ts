@@ -4,9 +4,11 @@ export default class Texture {
         this.img = new Image();
         this.img.src = url;
     }
+
+    load() {
+        return new Promise((resolve, reject) => {
+            this.img.addEventListener("load", () => resolve(true))
+        })
+    }
 }
 
-export const textures = {
-    bg: new Texture("./assets/pyramid.jpg"),
-    
-}
