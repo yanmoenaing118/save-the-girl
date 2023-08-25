@@ -11,6 +11,7 @@ import Sound from "./Sound";
 import Score from "./Score";
 import GameOver from "./GameOver";
 import Background from "./Background";
+import Assets from "./Assets";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const context = canvas.getContext("2d") as CanvasRenderingContext2D;
@@ -284,4 +285,9 @@ function run(ellapsedTime: number) {
 function START_GAME() {
   requestAnimationFrame(run);
 }
-START_GAME();
+
+Assets.load()
+.then( loaded => {
+  START_GAME();
+})
+

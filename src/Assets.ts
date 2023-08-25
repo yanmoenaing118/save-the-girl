@@ -1,4 +1,3 @@
-import Texture from "./Texture";
 import { textures } from "./constants";
 
 export default class Assets {
