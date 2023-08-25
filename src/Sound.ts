@@ -1,28 +1,30 @@
 export default class Sound {
-  sound: HTMLAudioElement;
-  curr = 1.56;
-  end = 2.5;
-  isFirst = true;
-  constructor(src: string) {
-    this.sound = new Audio(src);
-  }
+  private static sounds: HTMLAudioElement[] = [];
 
-  play() {
-    if(this.isFirst) this.sound.play();
-    if(!this.isFirst && this.sound.ended) {
-        this.sound.play();
+  public static playSound() {
+    let soundFound = false;
+    let idx: number | undefined;
+    let sound: HTMLAudioElement;
+    Sound.sounds.forEach((el, i) => {
+      if (el.ended) {
+        soundFound = true;
+        idx = i;
+        return;
+      }
+    });
+
+    if (soundFound && idx) {
+      sound = Sound.sounds[idx];
+      sound.setAttribute("src", "./assets/gun-sound-1.wav");
+      sound.loop = false;
+      sound.volume = 0.1;
+      sound.play();
+    } else {
+      sound = document.createElement("audio");
+      sound.setAttribute("src", "./assets/gun-sound-1.wav");
+      sound.volume = 0.1;
+      sound.play();
+      Sound.sounds.push(sound);
     }
-  }
-
-  stop() {
-    this.sound.pause();
-  }
-
-  isPaused() {
-    return this.sound.paused
-  }
-
-  reset() {
-    this.sound.currentTime = 0;
   }
 }

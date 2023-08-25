@@ -12,7 +12,6 @@ import Score from "./Score";
 import GameOver from "./GameOver";
 import Background from "./Background";
 
-
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const context = canvas.getContext("2d") as CanvasRenderingContext2D;
 context.imageSmoothingEnabled = true;
@@ -107,16 +106,15 @@ function updateSpiders(dt: number, t: number) {
 
 // Bullet Starts
 let lastShotFrame = 0;
-let shotRate = 0.04 ;
+let shotRate = 0.04;
 let bullets: Bullet[] = [];
-const gunSound = new Sound("./assets/AK-47-sound.wav");
 function createBullet() {
   const bullet = new Bullet();
   const bullet2 = new Bullet();
   bullet.pos.x = soldier.pos.x + soldier.tileW + 16;
   bullet2.pos.x = soldier.pos.x + soldier.tileW + 16;
   bullet.pos.y = soldier.pos.y + 47;
-  bullet2.pos.y = soldier.pos.y ;
+  bullet2.pos.y = soldier.pos.y;
   bullets.push(bullet);
   bullets.push(bullet2);
 }
@@ -159,10 +157,9 @@ function checkCollision() {
     spiders.forEach((spider) => {
       if (hasCollide(bullet, spider)) {
         spider.life--;
-        if(spider.life < 0) {
+        if (spider.life < 0) {
           spider.dead = true;
-        totalScore += 1;
-
+          totalScore += 1;
         }
       }
     });
@@ -208,33 +205,6 @@ function renderGameOver() {
   }
 }
 
-function playSound() {
-  let soundFound = false;
-  let idx: number | undefined;
-  let sound: HTMLAudioElement;
-  sounds.forEach((el, i) => {
-    if (el.ended) {
-      soundFound = true;
-      idx = i;
-      return;
-    }
-  });
-
-  if (soundFound && idx) {
-    sound = sounds[idx];
-    sound.setAttribute("src", "./assets/gun-sound-1.wav");
-    sound.loop = false;
-    sound.volume = 0.1;
-    sound.play();
-  } else {
-    sound = document.createElement("audio");
-    sound.setAttribute("src", "./assets/gun-sound-1.wav");
-    sound.volume = 0.1;
-    sound.play();
-    sounds.push(sound);
-  }
-}
-
 /** GAME LOOP starts here */
 function run(ellapsedTime: number) {
   dt = (ellapsedTime - time) * 0.001;
@@ -255,7 +225,8 @@ function run(ellapsedTime: number) {
     createBullet();
     soldier.frame.x = 1;
     lastShotFrame = 0;
-    playSound();
+
+    Sound.playSound();
   }
 
   lastSpwanTime += dt;
@@ -291,11 +262,10 @@ function run(ellapsedTime: number) {
   updateLife();
   updateGirlIndex();
 
-
   /**
    * render entites
    */
-  context.clearRect(0,0,canvas.width,canvas.height);
+  context.clearRect(0, 0, canvas.width, canvas.height);
   bg.render(context);
 
   soldier.render(context);
