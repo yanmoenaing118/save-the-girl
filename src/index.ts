@@ -6,7 +6,7 @@ import Spider from "./Spider";
 import math from "./math";
 import { clamp, hasCollide } from "./utils";
 import Heart from "./Heart";
-import { girlH, girlImages, girlW, h, w } from "./constants";
+import { APP_STATES, girlH, girlImages, girlW, h, w } from "./constants";
 import Sound from "./Sound";
 import Score from "./Score";
 import GameOver from "./GameOver";
@@ -41,7 +41,7 @@ let hasBiteGirl = false; // to flag the Gril has been bitten
 let currBittenTime = 0;
 let healthRate = 0.01;
 let isGameOver = false;
-const sounds: HTMLAudioElement[] = [];
+let APP_STATE = APP_STATES.loading;
 
 /**Background */
 const bg = new Background();
@@ -281,4 +281,7 @@ function run(ellapsedTime: number) {
   renderGameOver();
 }
 
-requestAnimationFrame(run);
+function START_GAME() {
+  requestAnimationFrame(run);
+}
+START_GAME();

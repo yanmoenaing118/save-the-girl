@@ -21,3 +21,8 @@ export const textures = {
   soldier: new Texture("./assets/shooter.png"),
   heart: new Texture("./assets/heart.png")
 }
+
+export const APP_STATES = {
+  loading: "LOADING",
+  loaded: "LOADED"
+}

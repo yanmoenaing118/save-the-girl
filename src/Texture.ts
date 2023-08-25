@@ -6,7 +6,7 @@ export default class Texture {
     }
 
     load() {
-        return new Promise((resolve, reject) => {
+        return new Promise<boolean>((resolve, reject) => {
             this.img.addEventListener("load", () => resolve(true))
         })
     }
