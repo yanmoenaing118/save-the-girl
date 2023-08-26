@@ -1,13 +1,15 @@
 import Sprite from "./Sprite";
 import Texture from "./Texture";
 import { w } from "./constants";
+import { isMobile } from "./utils";
 
 export default class Bullet extends Sprite {
-  speed: number = 2500;
+  speed: number;
   constructor() {
     super(new Texture("./assets/bullet.png"));
     this.w = 16;
     this.h = 16;
+    this.speed = isMobile ? 1000 : 2500;
   }
 
   update(dt: number, t: number) {

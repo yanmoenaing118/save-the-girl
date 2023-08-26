@@ -9,6 +9,7 @@ export default class Background {
 
     render(context: CanvasRenderingContext2D){
         context.save();
+        context.scale(1, 2)
         context.drawImage(this.bg.img, 0, 0, w, h);
         context.restore();
     }

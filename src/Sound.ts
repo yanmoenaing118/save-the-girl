@@ -22,18 +22,26 @@ export default class Sound {
       }
     });
 
-    if (soundFound && idx) {
-      sound = Sound.sounds[idx];
-      sound.setAttribute("src", "./assets/gun-sound-1.wav");
-      sound.loop = false;
-      sound.volume = 0.1;
-      sound.play();
-    } else {
-      sound = document.createElement("audio");
-      sound.setAttribute("src", "./assets/gun-sound-1.wav");
-      sound.volume = 0.1;
-      sound.play();
-      Sound.sounds.push(sound);
+    try {
+      if (soundFound && idx) {
+        sound = Sound.sounds[idx];
+        sound.setAttribute("src", "./assets/gun-sound-1.wav");
+        sound.loop = false;
+        sound.volume = 0.1;
+      } else {
+        sound = document.createElement("audio");
+        sound.setAttribute("src", "./assets/gun-sound-1.wav");
+        sound.volume = 0.1;
+        Sound.sounds.push(sound);
+      }
+
+      try {
+        sound.play();
+      } catch (error) {
+        console.log(error);
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 }

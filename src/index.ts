@@ -4,7 +4,7 @@ import KeyControls from "./KeysControl";
 import Soldier from "./Soldier";
 import Spider from "./Spider";
 import math from "./math";
-import { clamp, hasCollide } from "./utils";
+import { clamp, hasCollide, isMobile } from "./utils";
 import Heart from "./Heart";
 import { APP_STATES, girlH, girlImages, girlW, h, w } from "./constants";
 import Sound from "./Sound";
@@ -13,6 +13,8 @@ import GameOver from "./GameOver";
 import Background from "./Background";
 import Assets from "./Assets";
 import Text from "./Text";
+import State from "./State";
+import Instruction from "./Instruction";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const context = canvas.getContext("2d") as CanvasRenderingContext2D;
@@ -32,6 +34,8 @@ let dt = 1 / 60;
 let time = 0; // in millis
 let second = 0;
 const control = new KeyControls();
+const state = new State(APP_STATES.loading);
+const touches: any = {};
 
 /** Game stats */
 let totalScore = 0;
@@ -43,14 +47,13 @@ let hasBiteGirl = false; // to flag the Gril has been bitten
 let currBittenTime = 0;
 let healthRate = 0.01;
 let isGameOver = false;
-let APP_STATE = APP_STATES.loading;
-
+let touched = false;
 /**Background */
 const bg = new Background();
 
 /**Girl start */
 const girls: Girl[] = [];
-const girly = h / 2;
+const girly = h / 3;
 (function createGirls() {
   girlImages.forEach((url) => {
     const girl = new Girl(url);
@@ -79,19 +82,20 @@ soldier.pos.y = girl.pos.y;
 /** Spiders Start*/
 let spiders: Spider[] = [];
 let lastSpwanTime = 0;
-let spwanRate = 0.04;
+let spwanRate = isMobile ? 0.01 : 0.06;
 function createSpiders() {
-  for (let i = 0; i < 1; i++) {
+  if (isMobile) {
+    for (let i = 0; i < 5; i++) {
+      const spider = new Spider();
+
+      spiders.push(spider);
+    }
+  } else {
     const spider = new Spider();
-    spider.pos.x = w - 64;
-    spider.pos.y = math.rand(0, h - spider.h - soldier.tileH / 2);
-    spider.tileH = 64;
-    spider.tileW = 64;
-    spider.frame.y = 3;
+
     spiders.push(spider);
   }
 }
-createSpiders();
 
 function renderSpiders() {
   spiders.forEach((spider) => {
@@ -109,7 +113,7 @@ function updateSpiders(dt: number, t: number) {
 
 // Bullet Starts
 let lastShotFrame = 0;
-let shotRate = 0.04;
+let shotRate = 0.086;
 let bullets: Bullet[] = [];
 function createBullet() {
   const bullet = new Bullet();
@@ -120,6 +124,7 @@ function createBullet() {
   bullet2.pos.y = soldier.pos.y;
   bullets.push(bullet);
   bullets.push(bullet2);
+  Sound.playSound();
 }
 
 function renderBullets() {
@@ -174,8 +179,8 @@ function checkGirlHit() {
     if (hasCollide(spider, girl, 0)) {
       spider.speed = 0;
     }
-    if(spider.pos.x < girl.w + 12 && !spider.bite) {
-      spider.pos.y = math.rand(girl.pos.y + 50,girl.pos.y + girl.h);
+    if (spider.pos.x < girl.w + 12 && !spider.bite) {
+      spider.pos.y = math.rand(girl.pos.y + 50, girl.pos.y + girl.h);
     }
   });
 }
@@ -211,38 +216,33 @@ function renderGameOver() {
   }
 }
 
-/** GAME LOOP starts here */
-function run(ellapsedTime: number) {
-  dt = (ellapsedTime - time) * 0.001;
-  time = ellapsedTime; // to seconds
-  second = time * 0.001;
-  
-  switch(APP_STATE) {
-    case APP_STATES.loading:
-      SHOW_LOADING();
-      break;
-    case APP_STATES.loaded:
-      PLAY_GAME();
-    break;
-    default:
-      console.log('i')
-  }
-
-  requestAnimationFrame(run);
+const loadingText = new Text("Loading assets...", w / 2 - 100, h / 2);
+loadingText.style.font = "28px monospace";
+loadingText.style.color = "white";
+function SHOW_LOADING() {
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  loadingText.render(context);
 }
 
+const instr = new Instruction(w / 2 - 200, h / 2 - 50);
+function SHOW_INSTRUCTION() {
+  instr.render(context);
+  if (state.ellapsedTime > 5) {
+    state.set(APP_STATES.play);
+    console.log(state.ellapsedTime);
+  }
+}
 
-const loadingText = new Text("Loading assets...", w / 2 - 100, h /2);
-loadingText.style.font = "28px monospace";
-loadingText.style.color = 'white';
-function SHOW_LOADING() {
-  loadingText.render(context); 
+function shoot() {
+  createBullet();
+  lastShotFrame = 0;
+  soldier.frame.x = 1;
 }
 
 function PLAY_GAME() {
   if (control.y && !isGameOver) {
     const dy = soldier.pos.y + soldier.speed * dt * control.y;
-    soldier.pos.y = Math.max(0, Math.min(h - 128, dy));
+    soldier.pos.y = Math.max(0, Math.min(h - soldier.h, dy));
   }
 
   if (control.x && !isGameOver) {
@@ -251,20 +251,35 @@ function PLAY_GAME() {
   }
 
   lastShotFrame += dt;
-  if (lastShotFrame > shotRate && control.action && !isGameOver) {
-    createBullet();
-    soldier.frame.x = 1;
-    lastShotFrame = 0;
-
-    Sound.playSound();
+  if (
+    lastShotFrame > shotRate &&
+    control.action &&
+    !isGameOver &&
+    state.is(APP_STATES.play)
+  ) {
+    shoot();
   }
 
+  if (
+    isMobile &&
+    state.is(APP_STATES.play) &&
+    !control.action &&
+    touched &&
+    lastShotFrame > shotRate &&
+    !isGameOver
+  ) {
+    shoot();
+    // soldier.update(dt, second);
+  }
   lastSpwanTime += dt;
   if (lastSpwanTime > spwanRate) {
-    createSpiders();
-    lastSpwanTime = 0;
-    const rate = Math.random() * 0.5;
-    spwanRate = rate > 0.15 ? 0.15 : rate;
+    if(state.ellapsedTime > 3) {
+      createSpiders();
+      lastSpwanTime = 0;
+      const rate = Math.random() * 0.5;
+      spwanRate = rate > 0.15 ? 0.15 : rate;
+    }
+    
     // spwanRate = 1;
   }
 
@@ -282,7 +297,7 @@ function PLAY_GAME() {
   if (hasBiteGirl) {
     updateGirlHealth(second);
   }
-  if (control.action) {
+  if (control.action || isMobile) {
     soldier.update(dt, second);
   } else {
     soldier.frame.x = 0;
@@ -307,18 +322,58 @@ function PLAY_GAME() {
   score.render(context);
   renderLife();
   renderGameOver();
-
 }
 
-Assets.load()
-.then( loaded => {
-  APP_STATE = APP_STATES.loaded;
-})
-
-
+// LOAD all game assets
+Assets.load().then((loaded) => {
+  console.log("loaded", loaded);
+  state.set(APP_STATES.loaded);
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   const loading = document.querySelector(".loading") as HTMLElement;
   loading.style.display = "none";
   requestAnimationFrame(run);
-})
+});
+
+canvas.addEventListener("touchstart", (e: TouchEvent) => {
+  for (let i = 0; i < e.changedTouches.length; i++) {
+    const touch = e.targetTouches[i];
+    soldier.pos.y = touch.pageY;
+    soldier.pos.y = clamp(soldier.pos.y, 0, h - soldier.h);
+  }
+  touched = true;
+});
+canvas.addEventListener("touchmove", (e: TouchEvent) => {
+  e.preventDefault();
+  for (let i = 0; i < e.changedTouches.length; i++) {
+    const touch = e.targetTouches[i];
+    soldier.pos.y = touch.pageY;
+    soldier.pos.y = clamp(soldier.pos.y, 0, h - soldier.h);
+  }
+});
+
+/** GAME LOOP starts here */
+function run(ellapsedTime: number) {
+  dt = (ellapsedTime - time) * 0.001;
+  time = ellapsedTime; // to seconds
+  second = time * 0.001;
+
+  switch (state.get()) {
+    case APP_STATES.loading:
+      SHOW_LOADING();
+      break;
+    case APP_STATES.loaded:
+      SHOW_INSTRUCTION();
+      break;
+    case APP_STATES.play:
+      PLAY_GAME();
+      break;
+    default:
+      console.log("i");
+  }
+
+  state.update(dt);
+
+  requestAnimationFrame(run);
+}

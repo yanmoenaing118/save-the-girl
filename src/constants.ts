@@ -19,10 +19,13 @@ export const textures = {
   girl: new Texture("./assets/girl41.png"),
   spider: new Texture("./assets/spider.png"),
   soldier: new Texture("./assets/shooter.png"),
-  heart: new Texture("./assets/heart.png")
+  heart: new Texture("./assets/heart.png"),
+  bullet: new Texture("./assets/bullet.png")
 }
 
 export const APP_STATES = {
   loading: "LOADING",
-  loaded: "LOADED"
+  loaded: "LOADED",
+  play: "PlAY",
+  INSTRUCTION: "INSTRUCTION"
 }

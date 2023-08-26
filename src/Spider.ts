@@ -1,7 +1,8 @@
 import TileSprite from "./TileSprite";
-import { textures } from "./constants";
+import { h, textures, w } from "./constants";
 import math from "./math";
 import { FRAME_SPIDERS } from "./sprite-frames";
+import { isMobile } from "./utils";
 export default class Spider extends TileSprite {
   padding: number = 4;
   speed: number;
@@ -11,12 +12,24 @@ export default class Spider extends TileSprite {
     super(textures.spider);
     this.w = 64 - this.padding;
     this.h = 64 - this.padding;
-    this.speed = math.rand(300, 600);
+    this.pos.x = w - 64;
+    if (isMobile) {
+      this.pos.y = math.rand(0, h - this.h - 32);
+    } else {
+      this.pos.y = math.rand(h / 3.5, h - this.h - 32);
+    }
+    this.tileH = 64;
+    this.tileW = 64;
+    this.frame.y = 3;
+    this.speed = math.rand(200, 400);
+    if(isMobile) {
+      this.life = 20;
+    }
   }
 
   update(dt: number, t: number) {
     if (this.speed != 0) {
-      this.speed += t * 0.5;
+      this.speed += t * 0.2;
     }
 
     if (this.speed == 0) {
@@ -56,7 +69,7 @@ export default class Spider extends TileSprite {
     context.save();
     context.fillStyle = "red";
     context.translate(this.pos.x + 12, this.pos.y + 12);
-    context.fillRect(0,0,this.life * 4, 3);
+    context.fillRect(0, 0, this.life * 4, 3);
     context.restore();
   }
 }

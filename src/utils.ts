@@ -12,3 +12,6 @@ export function hasCollide(rect1: Sprite, rect2: Sprite, margin: number = 0) {
 export function clamp(x: number, min: number, max: number) {
   return Math.max(min, Math.min(x, max));
 }
+
+
+export const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
