@@ -12,6 +12,7 @@ import Score from "./Score";
 import GameOver from "./GameOver";
 import Background from "./Background";
 import Assets from "./Assets";
+import Text from "./Text";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const context = canvas.getContext("2d") as CanvasRenderingContext2D;
@@ -72,6 +73,7 @@ function updateGirlIndex() {
 /** Soldier Start */
 const soldier = new Soldier();
 soldier.pos.x = girl.w;
+soldier.pos.y = girl.pos.y;
 /** Soldier End */
 
 /** Spiders Start*/
@@ -172,6 +174,9 @@ function checkGirlHit() {
     if (hasCollide(spider, girl, 0)) {
       spider.speed = 0;
     }
+    if(spider.pos.x < girl.w + 12 && !spider.bite) {
+      spider.pos.y = math.rand(girl.pos.y + 50,girl.pos.y + girl.h);
+    }
   });
 }
 
@@ -211,6 +216,30 @@ function run(ellapsedTime: number) {
   dt = (ellapsedTime - time) * 0.001;
   time = ellapsedTime; // to seconds
   second = time * 0.001;
+  
+  switch(APP_STATE) {
+    case APP_STATES.loading:
+      SHOW_LOADING();
+      break;
+    case APP_STATES.loaded:
+      PLAY_GAME();
+    break;
+    default:
+      console.log('i')
+  }
+
+  requestAnimationFrame(run);
+}
+
+
+const loadingText = new Text("Loading assets...", w / 2 - 100, h /2);
+loadingText.style.font = "28px monospace";
+loadingText.style.color = 'white';
+function SHOW_LOADING() {
+  loadingText.render(context); 
+}
+
+function PLAY_GAME() {
   if (control.y && !isGameOver) {
     const dy = soldier.pos.y + soldier.speed * dt * control.y;
     soldier.pos.y = Math.max(0, Math.min(h - 128, dy));
@@ -218,7 +247,7 @@ function run(ellapsedTime: number) {
 
   if (control.x && !isGameOver) {
     const dx = soldier.pos.x + soldier.speed * dt * control.x;
-    soldier.pos.x = Math.max(0, Math.min(h - 128, dx));
+    soldier.pos.x = Math.max(girl.w, Math.min(h - 128, dx));
   }
 
   lastShotFrame += dt;
@@ -277,17 +306,19 @@ function run(ellapsedTime: number) {
   }
   score.render(context);
   renderLife();
-
-  requestAnimationFrame(run);
   renderGameOver();
-}
 
-function START_GAME() {
-  requestAnimationFrame(run);
 }
 
 Assets.load()
 .then( loaded => {
-  START_GAME();
+  APP_STATE = APP_STATES.loaded;
 })
 
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const loading = document.querySelector(".loading") as HTMLElement;
+  loading.style.display = "none";
+  requestAnimationFrame(run);
+})

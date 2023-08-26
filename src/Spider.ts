@@ -6,7 +6,7 @@ export default class Spider extends TileSprite {
   padding: number = 4;
   speed: number;
   bite: boolean = false;
-  life = 10;
+  life = 5;
   constructor() {
     super(textures.spider);
     this.w = 64 - this.padding;

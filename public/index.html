@@ -1,35 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <link rel="icon" type="image/x-icon" href="logo.ico">
-    <title>Save The Girl </title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        body {
-            width: 100%;
-            background-color: black;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-        }
-        #canvas {
-            margin: auto;
-            border: 1px solid white;
-        }
-        
+    <link rel="icon" type="image/x-icon" href="logo.ico" />
+    <title>Save The Girl</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        width: 100%;
+        background-color: black;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+      }
+      #canvas {
+        margin: auto;
+        border: 1px solid white;
+      }
+
+      .loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: black;
+        color: white;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: monospace;
+      }
     </style>
-</head>
-<body>
-        <canvas id="canvas"></canvas>
+  </head>
+  <body>
+    <div class="loading">
+        Loading...
+    </div>
+    <canvas id="canvas"></canvas>
     <script src="bundle.js"></script>
-</body>
+  </body>
 </html>
